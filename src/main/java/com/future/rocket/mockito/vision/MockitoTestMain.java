@@ -6,6 +6,7 @@ import com.future.rocket.mockito.vision.model.Person;
 import com.future.rocket.mockito.vision.service.PersonService;
 import com.future.rocket.mockito.vision.utils.OtherTool;
 import org.junit.Test;
+import org.mockito.InOrder;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -124,4 +125,109 @@ public class MockitoTestMain {
         //测试：匹配失败时，返回 null
         System.out.println("Result for 'foo': " + personServiceMock.findPerson("foo"));  // 期望输出 null
     }
+
+    @Test
+    public void testVerifying() {
+
+        List<String> mockedList = mock(List.class);
+
+        mockedList.add("once");
+
+        mockedList.add("twice");
+        mockedList.add("twice");
+
+        mockedList.add("three times");
+        mockedList.add("three times");
+        mockedList.add("three times");
+
+        verify(mockedList).add("once");
+        verify(mockedList, times(1)).add("once");
+
+        verify(mockedList, times(2)).add("twice");
+        verify(mockedList, times(3)).add("three times");
+
+        verify(mockedList, never()).add("foo");
+
+        verify(mockedList, atMostOnce()).add("once");
+        verify(mockedList, atLeastOnce()).add("twice");
+        verify(mockedList, atLeast(2)).add("twice");
+        verify(mockedList, atMost(3)).add("three times");
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void testVoidMethodThrowsException() {
+        List<String> mockedList = mock(List.class);
+
+        doThrow(new RuntimeException("Clear method failed")).when(mockedList).clear();
+
+        mockedList.clear();
+    }
+
+    @Test
+    public void testVoidMethodExceptionHandling() {
+        List<String> mockedList = mock(List.class);
+        doThrow(new RuntimeException("Leo foo foo")).when(mockedList).clear();
+
+        try {
+            mockedList.clear();
+        } catch (RuntimeException e) {
+            System.out.println("catch exception ==> " + e.getMessage());
+        }
+    }
+
+    @Test
+    public void testSingleOrder() {
+        List singleMock = mock(List.class);
+
+        singleMock.add("foo");
+        singleMock.add("leo");
+
+        InOrder inOrder = inOrder(singleMock);
+
+        inOrder.verify(singleMock).add("foo");
+        inOrder.verify(singleMock).add("leo");
+    }
+
+    @Test
+    public void testMultiOrder() {
+        List leoMockedList = mock(List.class);
+        List fooMockedList = mock(List.class);
+
+        leoMockedList.add("leo");
+        fooMockedList.add("foo");
+
+        InOrder inOrder = inOrder(fooMockedList, leoMockedList);
+
+        inOrder.verify(leoMockedList).add("leo");
+        inOrder.verify(fooMockedList).add("foo");
+    }
+
+    @Test
+    public void testMockInteractions() {
+        List<String> mockOne = mock(List.class);
+        List<String> mockLeo = mock(List.class);
+        List<String> mockFoo = mock(List.class);
+
+        mockOne.add("one");
+
+        verify(mockOne, times(1)).add("one");
+        verify(mockLeo, never()).add("leo");
+        verify(mockFoo, atMost(0)).add("foo");
+
+        verifyNoInteractions(mockFoo, mockLeo);
+    }
+
+    @Test
+    public void testRedundantInvocations() {
+        List<String> mockedList = mock(List.class);
+
+        mockedList.add("one");
+        mockedList.add("two");
+
+        verify(mockedList).add("one");
+        verify(mockedList).add("two");
+        verifyNoMoreInteractions(mockedList);
+    }
+
+
 }
