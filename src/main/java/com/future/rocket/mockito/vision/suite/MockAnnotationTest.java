@@ -1,4 +1,4 @@
-package com.future.rocket.mockito.vision;
+package com.future.rocket.mockito.vision.suite;
 
 import org.junit.Before;
 import org.junit.Test;

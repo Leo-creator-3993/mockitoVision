@@ -229,5 +229,40 @@ public class MockitoTestMain {
         verifyNoMoreInteractions(mockedList);
     }
 
+    @Test
+    public void testSpy_Index13() {
+        List list = new LinkedList();
+        List spy = spy(list);
 
+        //doReturn替代when避免数组越界异常
+        //when(spy.get(0)).thenReturn("foo");
+        doReturn("foo").when(spy).get(0);
+        System.out.println(spy.get(0));
+    }
+
+    @Test
+    public void testSpyWithPartialMock_Index16() {
+        List list = spy(new LinkedList());
+        list.add("foo");
+        list.add("leo");
+
+        when(list.get(0)).thenReturn("X");
+        System.out.println(list.get(0));
+        System.out.println(list.get(1));
+    }
+
+    @Test
+    public void testReset_Index17() {
+        List<String> mockedList = mock(List.class);
+        when(mockedList.size()).thenReturn(42);
+        mockedList.add("leo");
+
+        System.out.println("==: " + mockedList.size());
+        verify(mockedList).add("leo");
+
+        reset(mockedList);
+        System.out.println("##: " + mockedList.size());
+        reset(mockedList);
+        verifyNoInteractions(mockedList);
+    }
 }
