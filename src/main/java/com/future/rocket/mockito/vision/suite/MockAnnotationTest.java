@@ -34,7 +34,7 @@ public class MockAnnotationTest {
     public void testCalculateTax() {
         double result = articleManager.calculateTax(100.00);
 
-        verify(calculator, times(1)).calculateTax(100.00);
+        verify(calculator, times(2)).calculateTax(100.00);
         System.out.println("Calculated tax: " + result);
     }
 
